@@ -16,23 +16,47 @@ function UseState(props) {
     const [loading, setLoading] = useState(false)
     */
 
+    const onConfirm=()=>{
+        setState({
+            ...state,
+            value:'',
+            loading:false,
+            error:false,
+            confirmed:true
+        });
+    }
+
+    const onError=()=>{
+        setState({
+            ...state,
+            loading:false,
+            error:true
+        });
+    }
+
+    const onWrite=(text)=>{
+        setState({...state,value:text})
+    }
+
+    const onCheck=()=>{
+        setState({...state,loading:true,error:false})
+    }
+
+    const onDelete=()=>{
+        setState({...state,deleted:true})
+    }
+
+    const onReset=()=>{
+        setState({...state,deleted:false,confirmed:false,value:''})
+    }
+
     useEffect(() => {
         if (!!state.loading) {
             setTimeout(() => {
                 if(state.value===SECURITY_CODE){
-                    setState({
-                        ...state,
-                        value:'',
-                        loading:false,
-                        error:false,
-                        confirmed:true
-                    });
+                    onConfirm();
                 }else{
-                    setState({
-                        ...state,
-                        loading:false,
-                        error:true
-                    });
+                    onError();
                 }
             }, 3000);
         }
@@ -46,8 +70,8 @@ function UseState(props) {
                 {state.error&&<p>Error: el código es incorrecto</p>}
                 {state.loading&&<p>Cargando...</p>}
                 <input type='text' placeholder="Ingrese la palabra" value={state.value} 
-                onChange={(event)=>{setState({...state,value:event.target.value})}}/>
-                <button type="button" onClick={()=>{setState({...state,loading:!state.loading})}}>Comprobar</button>
+                onChange={(event)=>{onWrite(event.target.value)}}/>
+                <button type="button" onClick={()=>{onCheck()}}>Comprobar</button>
             </div>
         )
     }else if (!state.deleted && !!state.confirmed) {
@@ -55,15 +79,15 @@ function UseState(props) {
         return (
             <div>
                 <p>¿SEGURO?</p>
-                <button type="button" onClick={()=>setState({...state,deleted:true})}>SI</button>
-                <button type="button" onClick={()=>setState({...state,deleted:false,confirmed:false})} >NO</button>
+                <button type="button" onClick={()=>onDelete()}>SI</button>
+                <button type="button" onClick={()=>onReset()} >NO</button>
             </div>
         )
     }else if(!!state.confirmed&&!!state.deleted){
         return (
             <div>
                 <p>BORRADO EL USESTATE</p>
-                <button type="button" onClick={()=>setState({...state,deleted:false,confirmed:false})} >RECUPERAR</button>
+                <button type="button" onClick={()=>onReset()} >RECUPERAR</button>
             </div>
         )
     }
